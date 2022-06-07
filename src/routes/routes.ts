@@ -1,23 +1,24 @@
-const router = require('express').Router()
+import * as express from 'express';
+import controller from '../controller/controller';
 
-const controller = require('../controller/controller.ts')
+const router = express.Router()
 
-router.get('/', controller.getDataFromTable)
+router.get('/columns', controller.getDataFromTable)
 
-router.post('/add-card', controller.addCard)
+router.post('/cards', controller.addCard)
 
-router.post('/add-column', controller.addColumn)
+router.post('/columns', controller.addColumn)
 
-router.post('/move-column', controller.moveColumn)
+router.put('/columns', controller.moveColumn)
 
-router.post('/move-card', controller.moveCard)
+router.put('/cards', controller.moveCard)
 
-router.delete('/delete-card', controller.deleteCard)
+router.delete('/card', controller.deleteCard)
 
-router.delete('/delete-column', controller.deleteColumn)
+router.delete('/column', controller.deleteColumn)
 
-router.post('/rename-card', controller.renameCard)
+router.patch('/cards/:id', controller.renameCard)
 
-router.post('/rename-column', controller.renameColumn)
+router.patch('/columns/:columnId', controller.renameColumn)
 
-module.exports = router
+export default router

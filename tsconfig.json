@@ -3,6 +3,13 @@
         "target": "es6",
         "module": "commonjs",
         "esModuleInterop": true,
+        /*         "typeRoots": [
+            "./node_modules/@types",
+            "./src/environment"
+        ] */
         // ... rest
-    }
+    },
+    "exclude": [
+        "src/.env"
+    ]
 }

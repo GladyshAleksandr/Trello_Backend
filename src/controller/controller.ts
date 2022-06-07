@@ -1,86 +1,111 @@
-const request = require('request')
+import { Request, Response } from 'express';
+import { addCardStartType, addColumnStartType, updateColumnPositionStartType, updateCardPositionStartType, deleteCardStartType, deleteColumnStartType, renameCardStartType, renameColumnStartType } from "../types/types"
+import dbMethods from '../database/dbMethods'
 type ControlerType = {
-    addCard: (req: any, res: any) => void
-    moveColumn: (req: any, res: any) => void
-    addColumn: (req: any, res: any) => void
-    moveCard: (req: any, res: any) => void
-    deleteCard: (req: any, res: any) => void
-    deleteColumn: (req: any, res: any) => void
-    renameCard: (req: any, res: any) => void
-    renameColumn: (req: any, res: any) => void
+    getDataFromTable: (req: Request, res: Response) => Promise<void> //? or just void
+    addCard: (req: Request, res: Response) => Promise<void>
+    moveColumn: (req: Request, res: Response) => Promise<void>
+    addColumn: (req: Request, res: Response) => Promise<void>
+    moveCard: (req: Request, res: Response) => Promise<void>
+    deleteCard: (req: Request, res: Response) => Promise<void>
+    deleteColumn: (req: Request, res: Response) => Promise<void>
+    renameCard: (req: Request, res: Response) => Promise<void>
+    renameColumn: (req: Request, res: Response) => Promise<void>
 }
 
-const conctroller = {} as any
-const DatabaseMethods = require('../database/dbMethods.ts')
-
-const dbMethods = new DatabaseMethods()
+const conctroller = {} as ControlerType
+/* const dbMethods = require('../database/dbMethods.ts')
+ */
+const DatabaseMethods = new dbMethods()
 
 conctroller.getDataFromTable = async (req, res) => {
-    let columns = await dbMethods.getDataFromColumns()
-    /*     console.log("THE COLUMNS STORAGE IN CONTROLLER _____", columns)
-     */
-    let cards = await dbMethods.getDataFromCards()
-/*     console.log("THE CARDS STORAGE IN CONTROLLER _____", cards)
- */    let data = {
-        columns,
-        cards
+    try {
+        const data = await DatabaseMethods.getDataFromColumns()
+        res.json(data)
+    } catch (error) {
+        res.status(400)
     }
-    res.json(data)
 }
 
-conctroller.addCard = (req, res) => {
-/*     console.log(req.body)
- */   /*  let dataFromDb = */ dbMethods.addCard(req.body)
+conctroller.addCard = async (req, res) => {
+    try {
+        const result = await DatabaseMethods.addCard(req.body as addCardStartType)
+        res.send("Card was succesfully added")
+    } catch (error) {
+        res.status(400)
 
-    /*     console.log('DATA FROM DB TO SERVER ________ = ', dataFromDb)
-     */
-    res.status(200)
-    res.redirect('/')
+    }
 }
 
-conctroller.addColumn = (req, res) => {
-    dbMethods.addColumn(req.body)
-    res.status(200)
-    res.redirect('/')
+conctroller.addColumn = async (req, res) => {
+    try {
+        const result = await DatabaseMethods.addColumn(req.body as addColumnStartType)
+        res.send("Column was succesfully added")
+
+    } catch (error) {
+        res.status(400)
+
+    }
 }
 
-conctroller.moveColumn = (req, res) => {
-    let data = req.body
-    console.log("THE DATA FROM MOVE COLUMN CONTROLLER__", data)
-    dbMethods.moveColumn(data.first, data.second, data.arr)
-    res.status(200)
-    res.redirect('/')
+conctroller.moveColumn = async (req, res) => {
+    console.log('THE REQ BODY', req.body)
+    try {
+        const result = await DatabaseMethods.moveColumn(req.body as updateColumnPositionStartType)
+        res.status(200).send("Columns position in database was succesfully changed")
+    } catch (error) {
+        console.log("EROOR CATCHED")
+        res.status(400)
+
+    }
 }
 
-conctroller.moveCard = (req, res) => {
-    dbMethods.moveCard(req.body.arrForDb)
-    res.status(200)
-    res.redirect('/')
+conctroller.moveCard = async (req, res) => {
+    console.log('THE MOVE CARD CALLED')
+    try {
+        const result = await DatabaseMethods.moveCard(req.body as updateCardPositionStartType)
+        res.status(200).send("Card positions in database was succesfully changed")
+    } catch (error) {
+        res.status(400)
+
+    }
 }
 
-conctroller.deleteCard = (req, res) => {
-    dbMethods.deleteCard(req.data) // was req.body, but now req.data
-    res.status(200)
-    res.redirect('/')
+conctroller.deleteCard = async (req, res) => {
+    try {
+        const result = await DatabaseMethods.deleteCard(req.body as deleteCardStartType)
+        res.send("Card in database was sucesfully deleted")
+    } catch (error) {
+        res.status(400)
+    }
 }
 
-conctroller.deleteColumn = (req, res) => {
-    dbMethods.deleteColumn(req.data)
-    res.status(200)
-    res.redirect('/')
+conctroller.deleteColumn = async (req, res) => {
+    try {
+        const result = await DatabaseMethods.deleteColumn(req.body as deleteColumnStartType)
+        res.send("Column in database was sucesfully deleted")
+    } catch (error) {
+        res.status(400)
+    }
 }
 
-conctroller.renameCard = (req, res) => {
-    dbMethods.renameCard(req.body)
-    res.status(200)
-    res.redirect('/')
+conctroller.renameCard = async (req, res) => {
+    try {
+        const result = await DatabaseMethods.renameCard({ text: req.body.text, id: +req.params.id } as renameCardStartType)
+        res.send("Card in database was sucesfully renamed")
+    } catch (error) {
+        res.status(400)
+    }
 }
 
-conctroller.renameColumn = (req, res) => {
-    dbMethods.renameColumn(req.body)
-    res.status(200)
-    res.redirect('/')
+conctroller.renameColumn = async (req, res) => {
+    try {
+        const result = await DatabaseMethods.renameColumn({ columnTitle: req.body.columnTitle, columnId: +req.params.columnId } as renameColumnStartType)
+        res.send("Column in database was sucesfully renamed")
+    } catch (error) {
+        res.status(400)
+    }
 }
 
 
-module.exports = conctroller
+export default conctroller

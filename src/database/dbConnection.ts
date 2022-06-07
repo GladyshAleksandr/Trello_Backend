@@ -1,12 +1,8 @@
-require('dotenv').config()
-const mysql = require('mysql2')
+import { } from 'dotenv/config'
+import config from '../knexfile'
+import knex from 'knex'
 
-
-const connections = mysql.createConnection({
-    host: process.env.MYSQL_HOST,
-    user: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PASSWORD,
-    database: process.env.MYSQL_DB
-})
-
-module.exports = connections
+/* module.exports = require('knex')(config)
+ */
+const db = knex(config)
+export default db
